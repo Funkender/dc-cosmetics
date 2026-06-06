@@ -1,0 +1,189 @@
+(function() {
+    // 1. ALLES ALTE SAUBER AUFRÄUMEN
+    if (window.snowThemeStyle && window.snowThemeStyle.parentNode) window.snowThemeStyle.parentNode.removeChild(window.snowThemeStyle);
+    if (window.galaxyThemeStyle && window.galaxyThemeStyle.parentNode) window.galaxyThemeStyle.parentNode.removeChild(window.galaxyThemeStyle);
+    if (window.snowInterval) clearInterval(window.snowInterval);
+    if (window.galaxyStarInterval) clearInterval(window.galaxyStarInterval);
+    
+    document.querySelectorAll('.snowflake, .snow-bg-particle, .ice-crystal, .avatar-frost, .custom-shooting-star, .bg-star, .cosmic-moon').forEach(el => el.remove());
+
+    // 2. CSS FÜR POLARNACHT, BLIZZARD, RAUREIF & SCHNEEHAUBE
+    window.snowThemeStyle = document.createElement('style');
+    window.snowThemeStyle.textContent = `
+        /* Nordlicht im Hintergrund */
+        @keyframes auroraBorealis {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        /* Fallender Schnee im Wind */
+        @keyframes blizzardFall {
+            0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(520px) translateX(50px) rotate(720deg); opacity: 0; }
+        }
+        /* Funkelnde Frostpartikel */
+        @keyframes frostGlow {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); filter: drop-shadow(0 0 2px #bae6fd); }
+            50% { opacity: 1; transform: scale(1.3); filter: drop-shadow(0 0 6px #ffffff); }
+        }
+        /* Raureif-Glitzern im Call */
+        @keyframes hoarFrostSparkle {
+            0%, 100% { filter: drop-shadow(0 0 3px #ffffff) drop-shadow(0 0 8px #38bdf8); opacity: 0.8; }
+            50% { filter: drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 18px #e0f2fe); opacity: 1; }
+        }
+
+        /* DIE HAUPTKACHEL (Dunkles Polarnacht-Blau) */
+        div[class*="inner_c0bea0"] {
+            position: relative !important;
+            overflow: hidden !important;
+            background: linear-gradient(-45deg, #020617, #075985, #0d9488, #030712) !important;
+            background-size: 300% 300% !important;
+            animation: auroraBorealis 10s ease infinite !important;
+            border-radius: 8px !important;
+            border: 2px solid #38bdf8 !important;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1) !important;
+        }
+
+        /* CONTAINER-REGELN (Schnee darf oben rausragen!) */
+        div[class*="wrapper__44b0c"], div[class*="border_f910d0"] {
+            position: relative !important;
+            overflow: visible !important;
+        }
+
+        /* --- 1. RAUREIF-EFFEKT (Eisiger, rauer Rand um den Avatar) --- */
+        div[class*="wrapper__44b0c"]::before {
+            content: "" !important;
+            position: absolute !important;
+            width: 100% !important; height: 100% !important;
+            top: 0 !important; left: 0 !important;
+            border-radius: 50% !important;
+            z-index: 9 !important;
+            pointer-events: none !important;
+            box-sizing: border-box !important;
+            
+            /* Rauer Eisrand-Look durch feine Punktierung und harten Glow */
+            border: 3px dotted rgba(255, 255, 255, 0.8) !important;
+            filter: drop-shadow(0 0 4px #38bdf8) drop-shadow(0 0 10px #ffffff) !important;
+            transform: scale(1.06) !important;
+        }
+
+        /* --- 2. DIE SCHNEEHAUBE (Liegt perfekt oben auf dem Profilbild) --- */
+        div[class*="wrapper__44b0c"]::after {
+            content: "" !important;
+            position: absolute !important;
+            /* Sitzt oben mittig auf dem Kreis */
+            width: 86% !important; 
+            height: 24% !important;
+            top: -6px !important; 
+            left: 7% !important;
+            z-index: 99 !important;
+            pointer-events: none !important;
+            
+            /* Schneeweißer, weicher Verlauf nach unten für die Liege-Optik */
+            background: linear-gradient(180deg, #ffffff 60%, rgba(240, 249, 255, 0.9) 80%, transparent 100%) !important;
+            
+            /* Formt die Schneehaube so, dass sie links und rechts dicker liegt */
+            border-radius: 200px 200px 40px 40px / 120px 120px 20px 20px !important;
+            
+            /* 3D-Schneeglow */
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15)) drop-shadow(0 0 4px #ffffff) !important;
+        }
+
+        /* --- 3. LIVE ANRUF-INDIKATOR (Sprech-Glow für den Raureif) --- */
+        div[class*="border_f910d0"] {
+            box-shadow: none !important;
+            background: transparent !important;
+            border-color: transparent !important;
+        }
+        div[class*="border_f910d0"]::after {
+            content: "" !important;
+            position: absolute !important;
+            width: 100% !important; height: 100% !important;
+            top: 0 !important; left: 0 !important;
+            border-radius: 50% !important;
+            z-index: 9999 !important;
+            pointer-events: none !important;
+            box-sizing: border-box !important;
+            
+            /* Intensiverer, funkelnder Raureif beim Sprechen */
+            border: 4px double rgba(255, 255, 255, 0.9) !important;
+            animation: hoarFrostSparkle 1.5s ease-in-out infinite !important;
+            transform: scale(1.08) !important;
+        }
+
+        /* BACKGROUND PARTICLES & FOREGROUND FLAKES */
+        .snow-bg-particle {
+            position: absolute !important; background: #ffffff !important; border-radius: 50% !important; z-index: 1 !important; pointer-events: none !important;
+        }
+        .snowflake {
+            position: absolute !important; color: #ffffff !important; font-family: "Segoe UI Symbol", Arial, sans-serif !important;
+            user-select: none !important; z-index: 4 !important; pointer-events: none !important;
+            text-shadow: 0 0 5px rgba(56, 189, 248, 0.8), 0 0 10px #ffffff !important;
+        }
+
+        /* Discord Kacheln (Transparenter Frost-Look) */
+        div[class*="overlayBackground_"], section[class*="section_"], div[class*="body_"], div[class*="footer_"] {
+            background: rgba(3, 7, 18, 0.65) !important;
+            backdrop-filter: blur(6px) !important;
+            position: relative !important; z-index: 2 !important;
+            border: 1px solid rgba(56, 189, 248, 0.15) !important;
+        }
+        div[class*="banner_"] { background: transparent !important; }
+    `;
+    document.head.appendChild(window.snowThemeStyle);
+
+    // 3. GENERATOR FÜR WINTER-WOLKEN & BLIZZARD
+    function buildWinterSky(target) {
+        if (!target || target.querySelector('.snow-bg-particle')) return;
+
+        for (let i = 0; i < 30; i++) {
+            const crystal = document.createElement('div');
+            crystal.className = 'snow-bg-particle';
+            const size = (Math.random() * 2 + 1.5).toFixed(1);
+            crystal.style.width = size + 'px';
+            crystal.style.height = size + 'px';
+            crystal.style.top = Math.random() * 95 + '%';
+            crystal.style.left = Math.random() * 95 + '%';
+            
+            const duration = (Math.random() * 2.5 + 1.5).toFixed(2);
+            const delay = (Math.random() * 2).toFixed(2);
+            crystal.style.animation = `frostGlow ${duration}s ease-in-out infinite alternate`;
+            crystal.style.animationDelay = delay + 's';
+            
+            target.appendChild(crystal);
+        }
+    }
+
+    window.snowInterval = setInterval(() => {
+        const target = document.querySelector('div[class*="inner_c0bea0"]');
+        if (target) {
+            buildWinterSky(target);
+
+            if (target.querySelectorAll('.snowflake').length < 12) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                
+                const shapes = ['❄', '❅', '❆'];
+                flake.innerHTML = shapes[Math.floor(Math.random() * shapes.length)];
+                
+                const size = Math.floor(Math.random() * 12) + 10;
+                flake.style.fontSize = size + 'px';
+                flake.style.left = (Math.random() * 100) + '%';
+                flake.style.top = '-25px';
+                
+                const duration = (Math.random() * 3.5 + 3.5).toFixed(2);
+                flake.style.animation = `blizzardFall ${duration}s linear forwards`;
+                
+                target.appendChild(flake);
+                setTimeout(() => flake.remove(), duration * 1000);
+            }
+        }
+    }, 600);
+
+    const openProfile = document.querySelector('div[class*="inner_c0bea0"]');
+    if (openProfile) buildWinterSky(openProfile);
+
+    console.log("❄️ SCHNEEHAUBE UND RAUREIF ERFOLGREICH ÜBER DEN AVATAR GELEGT!");
+})();
