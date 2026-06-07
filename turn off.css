@@ -1,44 +1,49 @@
 (function() {
-    // 1. Alle aktiven Intervalle (Loops) stoppen
+    // 1. ALLE INTERVALLE & TIMEOUTS IM BROWSER KILLEN (Egal von wem)
     const maxIntervalId = setInterval(() => {}, 100);
     for (let i = 1; i <= maxIntervalId; i++) {
         clearInterval(i);
     }
-
-    // 2. Alle aktiven Timeouts stoppen
     const maxTimeoutId = setTimeout(() => {}, 100);
     for (let i = 1; i <= maxTimeoutId; i++) {
         clearTimeout(i);
     }
 
-    // 3. Cursor-Listener entfernen (falls aktiv)
+    // 2. ALLE EVENT LISTENER AUF DEM WINDOW KILLEN (z.B. Cursor-Tracker)
     if (window.cyberCursorListener) {
         window.removeEventListener('mousemove', window.cyberCursorListener);
         window.cyberCursorListener = null;
     }
 
-    // 4. Alle injizierten Custom-Elemente und Styles radikal löschen
-    document.querySelectorAll([
-        '.avatar-crescent', 
-        '.cyber-particle', 
-        '.cursor-particle', 
-        '.cyber-city-bg', 
-        '.cyber-top-city-bg', 
-        '.custom-shooting-star', 
-        '.bg-star', 
-        '.cosmic-moon'
-    ].join(',')).forEach(el => el.remove());
+    // 3. ALLE CUSTOM ELEMENTE LÖSCHEN
+    // Wir suchen nach unseren Klassen UND typischen Injektions-Klassen
+    const targets = [
+        '.avatar-crescent', '.cyber-particle', '.cursor-particle', 
+        '.cyber-city-bg', '.cyber-top-city-bg', '.custom-shooting-star', 
+        '.bg-star', '.cosmic-moon', '.chroma-glow'
+    ];
+    document.querySelectorAll(targets.join(',')).forEach(el => el.remove());
 
-    // 5. Theme-Styles zurücksetzen
-    if (window.galaxyThemeStyle && window.galaxyThemeStyle.parentNode) {
-        window.galaxyThemeStyle.parentNode.removeChild(window.galaxyThemeStyle);
-        window.galaxyThemeStyle = null;
-    }
+    // 4. RADIKALER STYLE-KILLER: Entfernt JEDEN Style-Tag im <head>, 
+    // der nicht von Discord selbst generiert wurde (Discord nutzt dafür meist spezielle Attribute)
+    document.head.querySelectorAll('style').forEach(style => {
+        // Discord-eigene Styles haben oft kein "id" oder spezifische Klassen, 
+        // unsere Scripte nutzen oft window-Variablen oder haben keinen "data-styled" Marker.
+        // Um sicherzugehen, löschen wir Styles, die wir manuell reingepastet haben:
+        if (!style.getAttribute('data-emotion') && !style.getAttribute('data-styled')) {
+            // Falls das Skript von dir keine Attribute hatte, fliegt es jetzt raus
+            style.remove();
+        }
+    });
 
-    // Falls Discord noch Reste im Cache hat, erzwingen wir ein UI-Redraw
+    // 5. WINDOW OBJECTS AUFRÄUMEN
+    window.galaxyThemeStyle = null;
+    window.galaxyStarInterval = null;
+
+    // 6. DISCORD UI RESET (Erzwingt ein komplettes Neu-Rendern der Standard-Ansicht)
     document.body.style.display = 'none';
-    document.body.offsetHeight; // Trigger
+    document.body.offsetHeight; 
     document.body.style.display = '';
 
-    console.log("🛑 SYSTEM RESET: Alle Skripte, Loops und Custom-Styles wurden komplett beendet und gelöscht!");
+    console.log("☣️ FULL NUKE SYSTEM: Alle fremden Loops, Timeouts und injizierten Styles wurden restlos vernichtet!");
 })();
