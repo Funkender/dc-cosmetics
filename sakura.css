@@ -1,0 +1,200 @@
+(function() {
+    // 1. CLEAN EVERYTHING OLD
+    if (window.galaxyThemeStyle && window.galaxyThemeStyle.parentNode) window.galaxyThemeStyle.parentNode.removeChild(window.galaxyThemeStyle);
+    if (window.galaxyStarInterval) clearInterval(window.galaxyStarInterval);
+    if (window.cyberCursorListener) window.removeEventListener('mousemove', window.cyberCursorListener);
+    
+    document.querySelectorAll('.avatar-crescent, .sakura-particle').forEach(el => el.remove());
+
+    // 2. THE ULTIMATE SAKURA COMPLETE CYBER-STYLE (CSS)
+    window.galaxyThemeStyle = document.createElement('style');
+    window.galaxyThemeStyle.textContent = `
+        /* --- ROTATION WIE BEIM CYBERPUNK --- */
+        @keyframes gearRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- ANIMATION FÜR FLIEGENDE BLÜTEN --- */
+        @keyframes petalFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(105%) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- SAKURA DARK SCHEME --- */
+        div[class*="chat__"], 
+        main[class*="chatContent__"], 
+        nav[class*="guilds__"], 
+        div[class*="sidebar__"], 
+        div[class*="container__5909d"], 
+        div[class*="members__"],
+        div[class*="membersWrap__"],
+        div[class*="container__2637a"],
+        nav[class*="privateChannels_e6b769"], 
+        div[class*="privateChannels__"],
+        div[class*="panels__"], 
+        div[class*="activityPanel__"],
+        div[class*="peopleColumn__"], 
+        div[class*="peopleList__"],
+        section[class*="title__"], 
+        div[class*="searchBar__"],
+        div[class*="content__5e434"] {
+            background-color: #0c0912 !important;
+            position: relative !important;
+        }
+
+        /* --- SAKURA GLOW FÜR DIE FREUNDESLISTE --- */
+        div[class*="peopleListItem__"] {
+            position: relative !important;
+            transition: all 0.25s ease !important;
+            border-radius: 8px !important;
+            border: 1px solid transparent !important;
+        }
+
+        div[class*="peopleListItem__"]:hover {
+            background: rgba(255, 183, 197, 0.1) !important;
+            border: 1px solid #ffb7c5 !important;
+            box-shadow: 0 0 15px rgba(255, 118, 150, 0.4), inset 0 0 8px rgba(255, 118, 150, 0.2) !important;
+        }
+
+        /* --- SAKURA BLÜTEN FEST IM PROFIL-HINTERGRUND --- */
+        div[class*="inner_c0bea0"], div[class*="userProfileOuter_"] {
+            position: relative !important;
+            background: #11091c !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(255, 150, 180, 0.2) !important;
+            overflow: hidden !important; /* Wichtig, damit Blätter im Profil bleiben */
+        }
+
+        div[class*="inner_c0bea0"]::before, div[class*="userProfileOuter_"]::before {
+            content: "" !important;
+            position: absolute !important;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1 !important;
+            opacity: 0.4;
+            background-image: 
+                radial-gradient(circle at 85% 20%, #ffb7c5 0%, #ff6584 6px, transparent 15px),
+                radial-gradient(circle at 73% 15%, #ffcbd5 0%, #ff7896 4px, transparent 10px),
+                radial-gradient(circle at 90% 32%, #ffb7c5 0%, #e64d70 5px, transparent 12px),
+                radial-gradient(circle at 15% 85%, #ffcbd5 0%, #ff6584 5px, transparent 12px);
+            background-size: cover !important;
+        }
+
+        /* PROFIL TEXTBOXEN TRANSPARENT --- */
+        div[class*="overlayBackground_"], section[class*="section_"], 
+        div[class*="body_"], div[class*="footer_"], div[class*="userProfileInner_"] > div {
+            background: rgba(15, 11, 22, 0.7) !important;
+            backdrop-filter: blur(4px) !important;
+            position: relative !important; 
+            z-index: 2 !important;
+            border: 1px solid rgba(255, 150, 180, 0.08) !important;
+            border-radius: 10px !important;
+        }
+        div[class*="userProfileInner_"] { position: relative !important; z-index: 2 !important; background: transparent !important; }
+        div[class*="banner_"], div[class*="bannerPremium_"] { background: transparent !important; }
+
+        /* --- AVATAR REALE CYBER-RINGE --- */
+        div[class*="wrapper__44b0c"] {
+            position: relative !important;
+            overflow: visible !important;
+        }
+
+        .avatar-crescent {
+            position: absolute !important;
+            width: 108% !important;
+            height: 108% !important;
+            top: -4% !important;
+            left: -4% !important;
+            border-radius: 50% !important;
+            z-index: 3 !important;
+            pointer-events: none !important;
+            box-sizing: border-box !important;
+            border: 3px dashed #ffb7c5 !important;
+            animation: gearRotate 15s linear infinite !important;
+            filter: drop-shadow(0 0 4px #ff7896) drop-shadow(0 0 8px #ffb7c5) !important;
+        }
+
+        /* FLIEGENDE PARTIKEL STYLING --- */
+        .sakura-particle {
+            position: absolute !important;
+            background: linear-gradient(135deg, #ffb7c5, #ff8da1);
+            border-radius: 50% 0 50% 50% !important;
+            pointer-events: none !important;
+            z-index: 1 !important; /* Liegt hinter den Textboxen, aber vor der Base */
+        }
+        
+        /* Für den Chat liegen sie ganz vorne */
+        div[class*="content__5e434"] .sakura-particle {
+            z-index: 9999 !important;
+        }
+    `;
+    document.head.appendChild(window.galaxyThemeStyle);
+
+    // 3. JAVASCRIPT LOOP FÜR AVATAR RINGE
+    function injectSakuraRings() {
+        document.querySelectorAll('div[class*="wrapper__44b0c"]').forEach(wrapper => {
+            if (!wrapper.querySelector('.avatar-crescent')) {
+                const ring = document.createElement('div');
+                ring.className = 'avatar-crescent';
+                wrapper.appendChild(ring);
+            }
+        });
+    }
+
+    // 4. GENERISCHE FUNKTION FÜR BLÜTENBLÄTTER
+    function createPetal(container) {
+        if (!container) return;
+        
+        // Limitierung, damit es in kleinen Profilen nicht laggt
+        const maxPetals = container.matches('div[class*="inner_c0bea0"], div[class*="userProfileOuter_"]') ? 8 : 20;
+        if (container.querySelectorAll('.sakura-particle').length >= maxPetals) return;
+
+        const petal = document.createElement('div');
+        petal.className = 'sakura-particle';
+        
+        const size = Math.floor(Math.random() * 4) + 5; // 5px bis 9px
+        petal.style.width = `${size}px`;
+        petal.style.height = `${size * 1.3}px`;
+        
+        const rect = container.getBoundingClientRect();
+        petal.style.left = `${Math.random() * (rect.width - 15)}px`;
+        petal.style.top = `-15px`;
+        
+        const duration = Math.random() * 3 + 4; // 4 bis 7 Sekunden
+        petal.style.animation = `petalFall ${duration}s linear forwards`;
+        
+        container.appendChild(petal);
+        setTimeout(() => { petal.remove(); }, duration * 1000);
+    }
+
+    // 5. CHAT PARTIKEL ENGINE BEIM BEWEGEN
+    let lastSpawn = 0;
+    window.cyberCursorListener = function(e) {
+        const now = Date.now();
+        if (now - lastSpawn < 300) return;
+        lastSpawn = now;
+
+        const chatContainer = document.querySelector('div[class*="content__5e434"]');
+        createPetal(chatContainer);
+    };
+
+    window.addEventListener('mousemove', window.cyberCursorListener);
+
+    // MAIN LOOP (Intervall für Ringe + automatische Profil-Blüten)
+    window.galaxyStarInterval = setInterval(() => {
+        injectSakuraRings();
+
+        // Sucht nach geöffneten Profilen (Popouts oder große Profile)
+        document.querySelectorAll('div[class*="inner_c0bea0"], div[class*="userProfileOuter_"]').forEach(profile => {
+            if (Math.random() < 0.4) { // Erzeugt kontinuierlich Blätter im Profil
+                createPetal(profile);
+            }
+        });
+    }, 250);
+
+    injectSakuraRings();
+
+    console.log("🌸 SAKURA COMPLETE v3: Die Blüten fallen jetzt auch wunderschön durch die Profilfenster!");
+})();
