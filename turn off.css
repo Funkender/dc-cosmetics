@@ -1,0 +1,44 @@
+(function() {
+    // 1. Alle aktiven Intervalle (Loops) stoppen
+    const maxIntervalId = setInterval(() => {}, 100);
+    for (let i = 1; i <= maxIntervalId; i++) {
+        clearInterval(i);
+    }
+
+    // 2. Alle aktiven Timeouts stoppen
+    const maxTimeoutId = setTimeout(() => {}, 100);
+    for (let i = 1; i <= maxTimeoutId; i++) {
+        clearTimeout(i);
+    }
+
+    // 3. Cursor-Listener entfernen (falls aktiv)
+    if (window.cyberCursorListener) {
+        window.removeEventListener('mousemove', window.cyberCursorListener);
+        window.cyberCursorListener = null;
+    }
+
+    // 4. Alle injizierten Custom-Elemente und Styles radikal löschen
+    document.querySelectorAll([
+        '.avatar-crescent', 
+        '.cyber-particle', 
+        '.cursor-particle', 
+        '.cyber-city-bg', 
+        '.cyber-top-city-bg', 
+        '.custom-shooting-star', 
+        '.bg-star', 
+        '.cosmic-moon'
+    ].join(',')).forEach(el => el.remove());
+
+    // 5. Theme-Styles zurücksetzen
+    if (window.galaxyThemeStyle && window.galaxyThemeStyle.parentNode) {
+        window.galaxyThemeStyle.parentNode.removeChild(window.galaxyThemeStyle);
+        window.galaxyThemeStyle = null;
+    }
+
+    // Falls Discord noch Reste im Cache hat, erzwingen wir ein UI-Redraw
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // Trigger
+    document.body.style.display = '';
+
+    console.log("🛑 SYSTEM RESET: Alle Skripte, Loops und Custom-Styles wurden komplett beendet und gelöscht!");
+})();
