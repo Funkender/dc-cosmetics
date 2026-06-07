@@ -5,39 +5,39 @@
     
     document.querySelectorAll('.custom-shooting-star, .bg-star, .cosmic-moon, .avatar-crescent, .cyber-particle, .cyber-city-bg, .cyber-mini-city, .cyber-top-city-bg').forEach(el => el.remove());
 
-    // 2. FIXED CYBERPUNK COMPLETE CODE (NO EXTENDED OVALS)
+    // 2. CYBERPUNK GLITCH CSS (FOR EVERY WRAPPER)
     window.galaxyThemeStyle = document.createElement('style');
     window.galaxyThemeStyle.textContent = `
         /* --- HIGH-FREQUENCY GLITCH ANIMATION --- */
         @keyframes hardcoreGlitch {
             0%, 100% {
-                transform: scale(1.08) translate(0, 0);
-                box-shadow: 0 0 15px #ff007f, inset 0 0 10px #ff007f;
+                transform: scale(1.02) translate(0, 0);
+                box-shadow: 0 0 14px #ff007f, inset 0 0 8px #ff007f;
                 border-color: #ff007f;
             }
             10% {
-                transform: scale(1.12) translate(-3px, 2px) skewX(-5deg);
-                box-shadow: -4px 0 25px #00f0ff, 4px 0 25px #ff007f;
+                transform: scale(1.04) translate(-1px, 1px) skewX(-2deg);
+                box-shadow: -4px 0 18px #00f0ff, 4px 0 18px #ff007f;
                 border-color: #00f0ff;
             }
             15% {
-                transform: scale(1.05) translate(3px, -2px);
+                transform: scale(1.0) translate(1px, -1px);
                 border-color: #ffffff;
             }
             20% {
-                transform: scale(1.08) translate(0, 0) skewX(0deg);
+                transform: scale(1.02) translate(0, 0) skewX(0deg);
                 border-color: #ff007f;
             }
             75% {
-                transform: scale(1.08) translate(0, 0);
+                transform: scale(1.02) translate(0, 0);
             }
             78% {
-                transform: scale(1.15) translate(-2px, -3px) skewX(5deg);
-                box-shadow: 0 0 30px #00f0ff;
+                transform: scale(1.05) translate(-1px, -1px) skewX(2deg);
+                box-shadow: 0 0 22px #00f0ff;
                 border-color: #00f0ff;
             }
             82% {
-                transform: scale(1.08) translate(0, 0) skewX(0deg);
+                transform: scale(1.02) translate(0, 0) skewX(0deg);
             }
         }
 
@@ -98,42 +98,37 @@
             box-shadow: 0 0 30px rgba(255, 0, 127, 0.5) !important;
         }
 
-        div[class*="wrapper__44b0c"], div[class*="avatar_"] { position: relative !important; overflow: visible !important; }
-        div[class*="wrapper__44b0c"] img, div[class*="avatar_"] img { z-index: 4 !important; position: relative !important; }
-
-        /* --- FIX: ENTFERNT DIE VERZERRTE RIESEN-ELLIPSE AUS DEM BANNER/AVATAR --- */
-        svg[class*="mask_"], svg[class*="avatarSvg_"] {
-            mask: none !important;
-            overflow: visible !important;
-        }
-        
-        /* Entfernt fehlerhaft gerenderte SVG-Masken-Kreise, die sich aufblähen */
-        svg[class*="mask_"] > circle, 
-        svg[class*="mask_"] > path[fill="black"],
-        rect[class*="pointerEvents_"], 
-        div[class*="avatarHint_"],
-        mask[id*="svg-mask-avatar-"] { 
-            display: none !important; 
-            opacity: 0 !important;
-        }
-        
-        /* Hält das Profilbild sauber rund ohne Stör-Objekte */
-        svg[class*="mask_"] foreignObject {
-            mask: none !important;
-            border-radius: 50% !important;
+        /* --- RADIKALER REINFORCED WRAPPER FÜR ALLE AVATARE --- */
+        div[class*="wrapper__44b0c"] {
+            position: relative !important;
+            overflow: visible !important; /* Erlaubt das fette Leuchten nach außen! */
         }
 
-        /* --- THE GLITCH AVATAR RING --- */
+        /* --- GLOBAL GLITCH KREIS FÜR JEDEN WRAPPER --- */
         .avatar-crescent {
             position: absolute !important;
-            width: 100% !important; height: 100% !important;
-            top: 0 !important; left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            top: 0 !important;
+            left: 0 !important;
             border-radius: 50% !important;
-            z-index: 3 !important; pointer-events: none !important;
+            z-index: 3 !important; /* Über dem Bild, unter eventuellen Discord Status-Dots falls nötig */
+            pointer-events: none !important;
             border: 3px solid #ff007f !important;
             animation: hardcoreGlitch 0.8s linear infinite !important;
-            transform: scale(1.08) !important;
             box-sizing: border-box !important;
+        }
+
+        /* Verhindert, dass Discord-eigene Masken den Kreis oder das fette Leuchten abschneiden */
+        svg[class*="mask_"], foreignObject { 
+            mask: none !important; 
+            overflow: visible !important; 
+        }
+        foreignObject {
+            border-radius: 50% !important;
+        }
+        svg[class*="mask_"] > circle[fill="black"] {
+            display: none !important;
         }
 
         /* DISCORD INFOS TRANSPARENT DARÜBER LEGEN */
@@ -154,20 +149,19 @@
         div[class*="userProfileInner_"] { background: transparent !important; position: relative !important; z-index: 2 !important; }
         div[class*="banner_"], div[class*="bannerPremium_"] { background: transparent !important; }
 
-        /* --- STYLING FÜR DIE GEBÄUDE (UNTEN & OBEN) --- */
+        /* --- GEBÄUDE STYLING --- */
         .cyber-building {
             position: absolute !important;
             background: #1c0b3a !important; 
             border-top: 2px solid #ff007f !important; 
             box-shadow: 0 0 12px rgba(255, 0, 127, 0.6), inset 0 5px 15px rgba(0,0,0,0.6) !important;
         }
-        
         .cyber-window {
             position: absolute !important; background: #00f0ff !important;
             box-shadow: 0 0 8px #00f0ff; animation: neonFlicker 3s infinite alternate;
         }
 
-        /* --- BACKGROUND SKYLINE (UNTEN) --- */
+        /* --- SKYLINE UNTEN --- */
         .cyber-city-bg {
             position: absolute !important; bottom: 0 !important; left: 0 !important;
             width: 100% !important; height: 100% !important; z-index: 1 !important;
@@ -284,17 +278,18 @@
         setTimeout(() => { particle.remove(); }, duration * 1000);
     }
 
+    // EINFACHER, GLOBALER INJEKTOR FÜR JEDEN WRAPPER
     function injectGlitchRings() {
-        document.querySelectorAll('div[class*="wrapper__44b0c"], div[class*="avatar_"]').forEach(avatar => {
-            if (!avatar.querySelector('.avatar-crescent') && avatar.children.length > 0) {
+        document.querySelectorAll('div[class*="wrapper__44b0c"]').forEach(wrapper => {
+            if (!wrapper.querySelector('.avatar-crescent')) {
                 const glitchRing = document.createElement('div');
                 glitchRing.className = 'avatar-crescent';
-                avatar.appendChild(glitchRing);
+                wrapper.appendChild(glitchRing);
             }
         });
     }
 
-    // SYSTEM ENGINE LOOP
+    // ENGINE LOOP
     window.galaxyStarInterval = setInterval(() => {
         injectGlitchRings();
         
@@ -321,5 +316,5 @@
         buildCyberCity(p, true);
     });
 
-    console.log("🧼 ELLIPSE FIXED: Störende Banner-Rundungen komplett entfernt!");
+    console.log("💥 GLOBAL ENGAGED: Jeder Wrapper hat einen perfekten Kreis, das fette Leuchten ist überall zurück!");
 })();
