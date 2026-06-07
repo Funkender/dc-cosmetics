@@ -1,11 +1,12 @@
 (function() {
-    // 1. CLEAR OLD ENGINE & STYLES
+    // 1. CLEAR EVERYTHING OLD
     if (window.galaxyThemeStyle && window.galaxyThemeStyle.parentNode) window.galaxyThemeStyle.parentNode.removeChild(window.galaxyThemeStyle);
     if (window.galaxyStarInterval) clearInterval(window.galaxyStarInterval);
+    if (window.cyberCursorListener) window.removeEventListener('mousemove', window.cyberCursorListener);
     
-    document.querySelectorAll('.custom-shooting-star, .bg-star, .cosmic-moon, .avatar-crescent, .cyber-particle, .cyber-city-bg, .cyber-mini-city, .cyber-top-city-bg').forEach(el => el.remove());
+    document.querySelectorAll('.custom-shooting-star, .bg-star, .cosmic-moon, .avatar-crescent, .cyber-particle, .cyber-city-bg, .cyber-mini-city, .cyber-top-city-bg, .cursor-particle').forEach(el => el.remove());
 
-    // 2. CYBERPUNK GLITCH CSS (FOR EVERY WRAPPER)
+    // 2. HARDCORE CYBERPUNK CSS (PARTICLES, GLITCH & CURSOR EFFECT)
     window.galaxyThemeStyle = document.createElement('style');
     window.galaxyThemeStyle.textContent = `
         /* --- HIGH-FREQUENCY GLITCH ANIMATION --- */
@@ -41,20 +42,30 @@
             }
         }
 
-        @keyframes particleFly {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-180px) scale(0.1); opacity: 0; }
+        /* UPWARD CYBER PARTICLES */
+        @keyframes cyberParticleFly {
+            0% { transform: translateY(105vh) scale(1) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { transform: translateY(-5vh) scale(0.2) rotate(360deg); opacity: 0; }
+        }
+
+        /* CURSOR TRAIL PARTICLES */
+        @keyframes cursorFade {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; filter: blur(0px); }
+            100% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; filter: blur(2px); }
         }
 
         @keyframes neonFlicker {
             0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px #00f0ff); }
-            40% { opacity: 0.8; filter: drop-shadow(0 0 2px #00f0ff); }
-            50% { opacity: 1; filter: drop-shadow(0 0 6px #00f0ff); }
-            80% { opacity: 0.3; filter: drop-shadow(0 0 1px #00f0ff); }
-            90% { opacity: 0.95; }
+            30% { opacity: 0.9; }
+            35% { opacity: 0.2; filter: drop-shadow(0 0 1px #00f0ff); }
+            40% { opacity: 0.9; }
+            70% { opacity: 1; filter: drop-shadow(0 0 6px #00f0ff); }
+            90% { opacity: 0.4; }
         }
 
-        /* --- BASE INTERFACE --- */
+        /* --- BASE CYBERPUNK INTERFACE --- */
         div[class*="chat__"], 
         main[class*="chatContent__"], 
         nav[class*="guilds__"], 
@@ -69,42 +80,47 @@
         div[class*="panels__"], 
         div[class*="activityPanel__"],
         div[class*="searchBar__"] {
-            background-color: #120626 !important;
+            background-color: #0c0414 !important;
             position: relative !important;
         }
 
         div[class*="content__5e434"] {
             position: relative !important;
-            background: #090314 !important;
+            background: #06020a !important;
             overflow: hidden !important;
         }
 
+        /* CRT SCANLINES BACKGROUND */
         div[class*="content__5e434"]::before {
             content: " " !important; display: block !important; position: absolute !important;
             top: 0; left: 0; bottom: 0; right: 0 !important;
-            background: linear-gradient(rgba(18, 10, 36, 0) 60%, rgba(0, 0, 0, 0.3) 40%) !important;
-            z-index: 2 !important; background-size: 100% 3px !important; pointer-events: none !important;
+            background: linear-gradient(rgba(24, 10, 46, 0) 50%, rgba(0, 0, 0, 0.4) 50%) !important;
+            z-index: 2 !important; background-size: 100% 4px !important; pointer-events: none !important;
         }
 
-        .cyber-particle { position: absolute !important; z-index: 3 !important; pointer-events: none !important; }
-
-        /* --- PROFIL-CONTAINER --- */
-        div[class*="inner_c0bea0"], div[class*="userProfileOuter_"] {
-            position: relative !important; 
-            overflow: hidden !important;
-            background: linear-gradient(to top, #2e0d54 0%, #0d041a 100%) !important;
-            border-radius: 14px !important;
-            border: 2px solid #ff007f !important;
-            box-shadow: 0 0 30px rgba(255, 0, 127, 0.5) !important;
+        /* ENGINE PARTICLES */
+        .cyber-particle { 
+            position: absolute !important; 
+            z-index: 1 !important; 
+            pointer-events: none !important;
+            border-radius: 2px;
         }
 
-        /* --- RADIKALER REINFORCED WRAPPER FÜR ALLE AVATARE --- */
+        .cursor-particle {
+            position: fixed !important;
+            z-index: 99999 !important;
+            pointer-events: none !important;
+            border-radius: 50%;
+            animation: cursorFade 0.6s cubic-bezier(0.1, 0.8, 0.3, 1) forwards !important;
+        }
+
+        /* --- WRAPPER FOR ALL AVATARS --- */
         div[class*="wrapper__44b0c"] {
             position: relative !important;
-            overflow: visible !important; /* Erlaubt das fette Leuchten nach außen! */
+            overflow: visible !important;
         }
 
-        /* --- GLOBAL GLITCH KREIS FÜR JEDEN WRAPPER --- */
+        /* --- GLOBAL GLITCH KREIS --- */
         .avatar-crescent {
             position: absolute !important;
             width: 100% !important;
@@ -112,36 +128,41 @@
             top: 0 !important;
             left: 0 !important;
             border-radius: 50% !important;
-            z-index: 3 !important; /* Über dem Bild, unter eventuellen Discord Status-Dots falls nötig */
+            z-index: 3 !important;
             pointer-events: none !important;
             border: 3px solid #ff007f !important;
             animation: hardcoreGlitch 0.8s linear infinite !important;
             box-sizing: border-box !important;
         }
 
-        /* Verhindert, dass Discord-eigene Masken den Kreis oder das fette Leuchten abschneiden */
+        /* DISCORD SVG FIXES */
         svg[class*="mask_"], foreignObject { 
             mask: none !important; 
             overflow: visible !important; 
         }
-        foreignObject {
-            border-radius: 50% !important;
-        }
-        svg[class*="mask_"] > circle[fill="black"] {
-            display: none !important;
+        foreignObject { border-radius: 50% !important; }
+        svg[class*="mask_"] > circle[fill="black"] { display: none !important; }
+
+        /* --- PROFIL CONTAINER STYLING --- */
+        div[class*="inner_c0bea0"], div[class*="userProfileOuter_"] {
+            position: relative !important; 
+            overflow: hidden !important;
+            background: linear-gradient(to top, #1f073a 0%, #05010d 100%) !important;
+            border-radius: 14px !important;
+            border: 2px solid #ff007f !important;
+            box-shadow: 0 0 35px rgba(255, 0, 127, 0.6) !important;
         }
 
-        /* DISCORD INFOS TRANSPARENT DARÜBER LEGEN */
         div[class*="overlayBackground_"], 
         section[class*="section_"], 
         div[class*="body_"], 
         div[class*="footer_"],
         div[class*="userProfileInner_"] > div {
-            background: rgba(14, 5, 28, 0.45) !important;
-            backdrop-filter: blur(3px) !important;
+            background: rgba(10, 3, 20, 0.6) !important;
+            backdrop-filter: blur(4px) !important;
             position: relative !important; 
-            z-index: 2 !important;
-            border: 1px solid rgba(0, 240, 255, 0.25) !important;
+            z-index: 3 !important;
+            border: 1px solid rgba(0, 240, 255, 0.3) !important;
             border-radius: 8px !important;
             margin: 6px !important;
         }
@@ -149,45 +170,81 @@
         div[class*="userProfileInner_"] { background: transparent !important; position: relative !important; z-index: 2 !important; }
         div[class*="banner_"], div[class*="bannerPremium_"] { background: transparent !important; }
 
-        /* --- GEBÄUDE STYLING --- */
+        /* --- SKYLINE STYLING --- */
         .cyber-building {
             position: absolute !important;
-            background: #1c0b3a !important; 
+            background: #120524 !important; 
             border-top: 2px solid #ff007f !important; 
-            box-shadow: 0 0 12px rgba(255, 0, 127, 0.6), inset 0 5px 15px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 14px rgba(255, 0, 127, 0.5), inset 0 5px 15px rgba(0,0,0,0.8) !important;
         }
         .cyber-window {
             position: absolute !important; background: #00f0ff !important;
-            box-shadow: 0 0 8px #00f0ff; animation: neonFlicker 3s infinite alternate;
+            box-shadow: 0 0 8px #00f0ff; animation: neonFlicker 4s infinite alternate;
         }
-
-        /* --- SKYLINE UNTEN --- */
         .cyber-city-bg {
             position: absolute !important; bottom: 0 !important; left: 0 !important;
             width: 100% !important; height: 100% !important; z-index: 1 !important;
-            pointer-events: none !important; background: transparent !important;
+            pointer-events: none !important;
         }
         .cyber-city-bg .cyber-building { bottom: 0 !important; }
 
-        /* --- SKYLINE OBEN --- */
         .cyber-top-city-bg {
-            position: absolute !important; 
-            top: 0 !important; left: 0 !important;
-            width: 100% !important; height: 120px !important; 
-            z-index: 1 !important;
-            pointer-events: none !important; 
-            background: transparent !important;
+            position: absolute !important; top: 0 !important; left: 0 !important;
+            width: 100% !important; height: 120px !important; z-index: 1 !important;
+            pointer-events: none !important;
         }
         .cyber-top-city-bg .cyber-building {
-            top: 0 !important;
-            border-top: none !important;
+            top: 0 !important; border-top: none !important;
             border-bottom: 2px solid #00f0ff !important; 
-            box-shadow: 0 0 12px rgba(0, 240, 255, 0.6), inset 0 -5px 15px rgba(0,0,0,0.6) !important;
+            box-shadow: 0 0 14px rgba(0, 240, 255, 0.5), inset 0 -5px 15px rgba(0,0,0,0.8) !important;
         }
     `;
     document.head.appendChild(window.galaxyThemeStyle);
 
-    // 3. JAVASCRIPT MEGA-CITY ENGINE
+    // 3. CYBERPUNK ENGINE INJECTORS
+    function injectGlitchRings() {
+        document.querySelectorAll('div[class*="wrapper__44b0c"]').forEach(wrapper => {
+            if (!wrapper.querySelector('.avatar-crescent')) {
+                const glitchRing = document.createElement('div');
+                glitchRing.className = 'avatar-crescent';
+                wrapper.appendChild(glitchRing);
+            }
+        });
+    }
+
+    function spawnCyberParticles(chatContainer) {
+        if (!chatContainer || chatContainer.querySelectorAll('.cyber-particle').length > 45) return;
+
+        const p = document.createElement('div');
+        p.className = 'cyber-particle';
+        
+        // Zufällige Cyberpunk-Formen (Quadrate, Rechtecke, Daten-Streifen)
+        const mode = Math.random();
+        if (mode < 0.4) {
+            p.style.width = `${Math.floor(Math.random() * 3) + 2}px`;
+            p.style.height = `${Math.floor(Math.random() * 3) + 2}px`;
+        } else if (mode < 0.8) {
+            p.style.width = '1px';
+            p.style.height = `${Math.floor(Math.random() * 15) + 5}px`; // Vertikale Datenbits
+        } else {
+            p.style.width = `${Math.floor(Math.random() * 12) + 4}px`; // Horizontale Codefragmente
+            p.style.height = '1px';
+        }
+
+        const colors = ['#ff007f', '#00f0ff', '#9d00ff', '#ffffff'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = `0 0 10px ${p.style.background}`;
+        
+        p.style.left = `${Math.random() * 100}%`;
+        p.style.top = '0'; // Startet am unteren Ende der CSS-Animation
+        
+        const duration = (Math.random() * 4 + 3).toFixed(2);
+        p.style.animation = `cyberParticleFly ${duration}s linear forwards`;
+        
+        chatContainer.appendChild(p);
+        setTimeout(() => { p.remove(); }, duration * 1000);
+    }
+
     function buildCyberCity(container, isTop = false) {
         const className = isTop ? '.cyber-top-city-bg' : '.cyber-city-bg';
         if (!container || container.querySelector(className)) return;
@@ -211,40 +268,29 @@
             b.style.left = `${left}px`;
             
             if (isTop) {
-                if (Math.random() < 0.5) {
-                    b.style.borderBottom = "2px solid #ff007f";
-                    b.style.boxShadow = "0 0 12px rgba(255, 0, 127, 0.6)";
-                }
+                if (Math.random() < 0.5) b.style.borderBottom = "2px solid #ff007f";
             } else {
-                if (Math.random() < 0.5) {
-                    b.style.borderTop = "2px solid #00f0ff";
-                    b.style.boxShadow = "0 0 12px rgba(0, 240, 255, 0.6)";
-                }
+                if (Math.random() < 0.5) b.style.borderTop = "2px solid #00f0ff";
             }
 
             const rows = Math.floor(height / 14);
             const cols = Math.floor(width / 12);
             for (let r = 1; r < rows - 1; r++) {
                 for (let c = 1; c < cols - 1; c++) {
-                    if (Math.random() < 0.4) { 
+                    if (Math.random() < 0.35) { 
                         const win = document.createElement('div');
                         win.className = 'cyber-window';
-                        win.style.width = '4px';
-                        win.style.height = '4px';
-                        
-                        if (isTop) {
-                            win.style.bottom = `${r * 12}px`;
-                        } else {
-                            win.style.top = `${r * 13}px`;
-                        }
+                        win.style.width = '3px';
+                        win.style.height = '3px';
+                        win.style.top = isTop ? 'auto' : `${r * 13}px`;
+                        win.style.bottom = isTop ? `${r * 12}px` : 'auto';
                         win.style.left = `${c * 10}px`;
                         
-                        if (Math.random() < 0.25) {
-                            win.style.background = isTop ? '#00f0ff' : '#ff007f';
-                            win.style.boxShadow = `0 0 8px ${win.style.background}`;
+                        if (Math.random() < 0.2) {
+                            win.style.background = '#ff007f';
+                            win.style.boxShadow = '0 0 8px #ff007f';
                         }
-                        
-                        win.style.animationDelay = `${Math.random() * 2}s`;
+                        win.style.animationDelay = `${Math.random() * 4}s`;
                         b.appendChild(win);
                     }
                 }
@@ -254,67 +300,47 @@
         container.appendChild(cityContainer);
     }
 
-    function spawnParticlesIn(container, maxParticles) {
-        if (!container || container.querySelectorAll('.cyber-particle').length >= maxParticles) return;
+    // INTERACTIVE CURSOR TRAIL ENGINE
+    window.cyberCursorListener = function(e) {
+        if (Math.random() > 0.15) return; // Begrenzt Partikel-Spam für flüssige FPS
 
-        const particle = document.createElement('div');
-        particle.className = 'cyber-particle';
+        const cp = document.createElement('div');
+        cp.className = 'cursor-particle';
         
-        const size = Math.floor(Math.random() * 3) + 2;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
+        const size = Math.floor(Math.random() * 5) + 3;
+        cp.style.width = `${size}px`;
+        cp.style.height = `${size}px`;
         
-        const colors = ['#ff007f', '#00f0ff', '#ffffff'];
-        particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-        particle.style.boxShadow = `0 0 8px ${particle.style.background}`;
+        const colors = ['#00f0ff', '#ff007f', '#ffffff'];
+        cp.style.background = colors[Math.floor(Math.random() * colors.length)];
+        cp.style.boxShadow = `0 0 12px ${cp.style.background}`;
         
-        particle.style.left = `${Math.random() * 95}%`;
-        particle.style.bottom = `${Math.random() * 20}%`;
+        cp.style.left = `${e.clientX}px`;
+        cp.style.top = `${e.clientY}px`;
         
-        const duration = (Math.random() * 1.2 + 0.8).toFixed(2);
-        particle.style.animation = `particleFly ${duration}s ease-out forwards`;
-        
-        container.appendChild(particle);
-        setTimeout(() => { particle.remove(); }, duration * 1000);
-    }
+        document.body.appendChild(cp);
+        setTimeout(() => { cp.remove(); }, 600);
+    };
+    window.addEventListener('mousemove', window.cyberCursorListener);
 
-    // EINFACHER, GLOBALER INJEKTOR FÜR JEDEN WRAPPER
-    function injectGlitchRings() {
-        document.querySelectorAll('div[class*="wrapper__44b0c"]').forEach(wrapper => {
-            if (!wrapper.querySelector('.avatar-crescent')) {
-                const glitchRing = document.createElement('div');
-                glitchRing.className = 'avatar-crescent';
-                wrapper.appendChild(glitchRing);
-            }
-        });
-    }
-
-    // ENGINE LOOP
+    // 4. MAIN LOOP RUNNER
     window.galaxyStarInterval = setInterval(() => {
         injectGlitchRings();
         
         const chat = document.querySelector('div[class*="content__5e434"]');
+        if (chat) {
+            spawnCyberParticles(chat);
+            spawnCyberParticles(chat);
+        }
+
         const profiles = document.querySelectorAll('div[class*="inner_c0bea0"], div[class*="userProfileOuter_"]');
-        
         profiles.forEach(profile => {
             buildCyberCity(profile, false); 
             buildCyberCity(profile, true);  
-            spawnParticlesIn(profile, 12);
         });
+    }, 100);
 
-        if (chat) {
-            for(let i=0; i<2; i++) {
-                spawnParticlesIn(chat, 35);
-            }
-        }
-    }, 130);
-
-    // Initial-Trigger
+    // Initial Kickstart
     injectGlitchRings();
-    document.querySelectorAll('div[class*="inner_c0bea0"], div[class*="userProfileOuter_"]').forEach(p => {
-        buildCyberCity(p, false);
-        buildCyberCity(p, true);
-    });
-
-    console.log("💥 GLOBAL ENGAGED: Jeder Wrapper hat einen perfekten Kreis, das fette Leuchten ist überall zurück!");
+    console.log("🌌 NETRUNNER UPGRADE LOADED: Matrix Rain entfernt. Echtzeit-Cyber-Partikel, Cursor-Fragmente und maximale Strahlung online!");
 })();
